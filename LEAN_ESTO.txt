@@ -1,0 +1,26 @@
+Resumen de como funciona esta cosa:
+- Motor Prolog en Python que parsea código .pl, resuelve consultas con unificación y backtracking
+- Ejecutar con: python3 main.py [archivo.pl]
+- Ya funciona: parser, unificación, engine básico, REPL, predicados core (true, fail, =, var, etc)
+
+Falta implementar:
+
+1. ARITMÉTICA (src/prolog_builtins/arith.py):
+   - evaluate(): evaluar expresiones 2+3, X*5, etc
+   - is_2(): predicado X is Expr
+   - Comparaciones: =:=, =\=, <, =<, >, >=
+
+2. LISTAS (src/prolog_builtins/lists_atoms.py):
+   - member_2(): member(X, Lista)
+   - append_3(): append(L1, L2, L3)  
+   - length_2(), reverse_2()
+
+3. META-PREDICADOS (src/prolog_builtins/core.py):
+   - cut_0(): corte (!)
+   - call_1(): ejecutar goal dinámico
+   - once_1(), not_1(): una solución, negación
+
+4. UTILIDADES (src/utils/helpers.py):
+   - rename_variables(): evitar conflictos de variables
+   - extract_variables(): obtener variables de término
+
