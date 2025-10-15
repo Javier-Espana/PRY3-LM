@@ -82,7 +82,7 @@ GLOBAL_REGISTRY = BuiltinRegistry()
 
 def load_core_builtins(registry: BuiltinRegistry) -> None:
     """Carga predicados del núcleo ISO."""
-    from builtins.core import (
+    from prolog_builtins.core import (
         true_0, fail_0, equal_2, not_equal_2, 
         var_1, nonvar_1, atom_1, number_1, compound_1
     )
@@ -114,23 +114,33 @@ def load_core_builtins(registry: BuiltinRegistry) -> None:
 
 def load_arithmetic_builtins(registry: BuiltinRegistry) -> None:
     """Carga predicados aritméticos básicos."""
-    # TODO: PARA COMPAÑEROS DE GRUPO
-    # Implementar en builtins/arith.py:
-    # - is_2: evaluación aritmética (X is Expr)
-    # - arithmetic_equal_2: igualdad aritmética (=:=)
-    # - arithmetic_not_equal_2: desigualdad aritmética (=\=)
-    # - less_than_2, less_equal_2, greater_than_2, greater_equal_2
-    # 
-    # Ejemplo de implementación:
-    # def is_2(args, engine, env, trail):
-    #     lhs, rhs = args
-    #     try:
-    #         value = evaluate_arithmetic(rhs, env)
-    #         if unify(lhs, Number(value), env, trail):
-    #             yield env
-    #     except ArithmeticError:
-    #         return  # Falla
-    pass
+    from prolog_builtins.arith import (
+        is_2, 
+        arithmetic_equal_2, 
+        arithmetic_not_equal_2,
+        less_than_2, 
+        less_equal_2, 
+        greater_than_2, 
+        greater_equal_2
+    )
+    
+    # Evaluación aritmética
+    registry.register("is", 2, is_2, deterministic=True,
+                     description="Evaluación aritmética X is Expr")
+    
+    # Comparaciones aritméticas
+    registry.register("=:=", 2, arithmetic_equal_2, deterministic=True,
+                     description="Igualdad aritmética")
+    registry.register("=\\=", 2, arithmetic_not_equal_2, deterministic=True,
+                     description="Desigualdad aritmética")
+    registry.register("<", 2, less_than_2, deterministic=True,
+                     description="Menor que")
+    registry.register("=<", 2, less_equal_2, deterministic=True,
+                     description="Menor o igual que")
+    registry.register(">", 2, greater_than_2, deterministic=True,
+                     description="Mayor que")
+    registry.register(">=", 2, greater_equal_2, deterministic=True,
+                     description="Mayor o igual que")
 
 
 def load_list_builtins(registry: BuiltinRegistry) -> None:

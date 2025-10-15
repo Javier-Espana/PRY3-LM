@@ -59,6 +59,8 @@ class Lexer:
     def _skip_ws_and_comments(self) -> None:
         while True:
             ch = self._peek_char()
+            if not ch:  # EOF, salir inmediatamente
+                break
             if ch in " \t\r\n":
                 self._advance()
                 continue
@@ -66,9 +68,12 @@ class Lexer:
             if ch == "%":
                 self._advance()  # consumir el %
                 while True:
-                    ch = self._peek_char()
-                    if not ch or ch == "\n":
+                    nch = self._peek_char()
+                    if not nch or nch == "\n":
                         break
+                    self._advance()
+                # Consumir el salto de línea final si existe
+                if self._peek_char() == "\n":
                     self._advance()
                 continue
             break
@@ -84,6 +89,27 @@ class Lexer:
         if ch in "(),[].|":
             self._advance()
             return Token(ch, ch, start_line, start_col)
+        
+        # Operadores infijos
+        if ch == "+":
+            self._advance()
+            return Token("+", "+", start_line, start_col)
+        
+        if ch == "-":
+            self._advance()
+            return Token("-", "-", start_line, start_col)
+        
+        if ch == "*":
+            self._advance()
+            return Token("*", "*", start_line, start_col)
+        
+        if ch == "/":
+            self._advance()
+            return Token("/", "/", start_line, start_col)
+        
+        if ch == "^":
+            self._advance()
+            return Token("^", "^", start_line, start_col)
 
         # ':-'
         if ch == ":":

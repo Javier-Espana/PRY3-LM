@@ -34,7 +34,7 @@ def equal_2(args: PyList[Term], engine: Any, env: Env, trail: Trail) -> Generato
 
 
 def not_equal_2(args: PyList[Term], engine: Any, env: Env, trail: Trail) -> Generator[Env, None, None]:
-    """\=/2 - No unificación (falla si los términos se unifican)."""
+    r"""\=/2 - No unificación (falla si los términos se unifican)."""
     if len(args) != 2:
         return
     

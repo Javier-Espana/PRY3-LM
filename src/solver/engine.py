@@ -40,7 +40,7 @@ class Engine:
 		first, rest = goals[0], goals[1:]
 
 		# Verificar si es un builtin primero
-		from builtins.registry import GLOBAL_REGISTRY
+		from prolog_builtins.registry import GLOBAL_REGISTRY
 		if GLOBAL_REGISTRY.is_builtin(first):
 			# Ejecutar builtin
 			for result_env in GLOBAL_REGISTRY.call(first, self, env, trail):
@@ -50,13 +50,19 @@ class Engine:
 
 		# Buscar cláusulas candidatas en la base de conocimiento
 		for clause in self.kb.get_candidates(first):
+			# Renombrar variables de la cláusula para evitar conflictos
+			from utils.helpers import rename_variables
+			var_map: Dict[int, Variable] = {}
+			renamed_head = rename_variables(clause.head, var_map)
+			renamed_body = [rename_variables(goal, var_map) for goal in clause.body]
+			
 			# Preparar nuevo entorno y trail para esta rama
 			local_env = env.copy()
 			local_trail = Trail()
-			# Unificar cabeza con goal
-			if unify(first, clause.head, local_env, local_trail, self.occurs_check):
-				# Nueva lista de metas: cuerpo de la regla + resto
-				new_goals = list(clause.body) + rest
+			# Unificar cabeza renombrada con goal
+			if unify(first, renamed_head, local_env, local_trail, self.occurs_check):
+				# Nueva lista de metas: cuerpo renombrado + resto
+				new_goals = renamed_body + rest
 				# Resolver recursivamente
 				yield from self._solve(new_goals, local_env, local_trail)
 			# Si falla, se descartan bindings locales por el Trail de la rama

@@ -37,10 +37,19 @@ class Number(Term):
 		return str(self.value)
 
 
-@dataclass
+# Contador para IDs únicos de variables
+_var_id_counter = 0
+
+def _next_var_id() -> int:
+	global _var_id_counter
+	_var_id_counter += 1
+	return _var_id_counter
+
+
+@dataclass(unsafe_hash=True)
 class Variable(Term):
 	name: str
-	id: int = field(default_factory=id)
+	id: int = field(default_factory=_next_var_id, compare=False)
 
 	def __str__(self) -> str:  # pragma: no cover
 		return self.name

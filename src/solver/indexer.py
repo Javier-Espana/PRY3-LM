@@ -41,10 +41,18 @@ class Index:
 	def candidates(self, head: Compound) -> Iterable[Clause]:
 		# devolver por clave concreta + comodín para cobertura
 		k = _first_arg_key(head)
-		for c in self.by_key.get(k, []):
-			yield c
-		for c in self.by_key.get(("*", "_"), []):
-			if k != ("*", "_"):
+		
+		# Si el goal tiene una variable en el primer argumento, puede matchear
+		# con cualquier cláusula, entonces devolver todas
+		if k == ("*", "_"):
+			for clauses in self.by_key.values():
+				for c in clauses:
+					yield c
+		else:
+			# Devolver cláusulas con clave específica + cláusulas comodín
+			for c in self.by_key.get(k, []):
+				yield c
+			for c in self.by_key.get(("*", "_"), []):
 				yield c
 
 
@@ -62,6 +70,13 @@ class KnowledgeBase:
 
 	def predicates(self) -> Iterable[PredKey]:
 		return self.clauses.keys()
+	
+	def list_predicates(self) -> PyList[str]:
+		"""Devuelve una lista formateada de predicados cargados."""
+		result = []
+		for functor, arity in self.clauses.keys():
+			result.append(f"{functor}/{arity}")
+		return result
 
 	def get_candidates(self, goal: Compound) -> Iterable[Clause]:
 		key = (goal.functor, goal.arity())
