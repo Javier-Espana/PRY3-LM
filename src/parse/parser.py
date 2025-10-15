@@ -18,8 +18,8 @@ from core.types import Atom, Clause, Compound, Number, Term, Variable
 from parse.lexer import Lexer, Token
 
 
-# Precedencia de operadores (menor número = mayor precedencia)
-# Basado en Prolog estándar
+#precedencia de operadores (menor número = mayor precedencia)
+#baasado en Prolog estándar
 OPERATOR_PRECEDENCE = {
     "^": 200,   # Potencia (más alta precedencia)
     "*": 400,   # Multiplicación
@@ -34,7 +34,7 @@ class Parser:
 		self.lexer = Lexer(text)
 		self._tokens = list(self.lexer.tokens())
 		self.pos = 0
-		self.var_map: Dict[str, Variable] = {}  # Mapeo de nombres de variables a instancias
+		self.var_map: Dict[str, Variable] = {}
 
 	def _peek(self) -> Token:
 		return self._tokens[self.pos]
@@ -50,10 +50,9 @@ class Parser:
 			raise SyntaxErrorProlog(f"se esperaba {kind}, se encontró {tok.kind}", tok.line, tok.col)
 		return self._advance()
 
-	# Entrada pública --------------------------------------------------------
+	# Entrada publica --------------------------------------------------------
 
 	def parse_clause(self) -> Clause:
-		# Resetear el mapeo de variables para cada cláusula nueva
 		self.var_map = {}
 		head = self.parse_compound_like()
 		tok = self._peek()
@@ -80,7 +79,6 @@ class Parser:
 		term = self.parse_term()
 		if isinstance(term, Compound):
 			return term
-		# Permitir hecho tipo atom/0 como Compound(functor, ())
 		if isinstance(term, Atom):
 			return Compound(term.name, tuple())
 		raise SyntaxErrorProlog("la cabeza/cuerpo debe ser un predicado (átomo o compuesto)", self._peek().line, self._peek().col)
